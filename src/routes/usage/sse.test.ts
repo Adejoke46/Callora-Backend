@@ -300,7 +300,6 @@ describe('GET /api/usage/sse', () => {
     const emittedEvent = {
       id: 'evt-1',
       requestId: 'req-1',
-      apiKey: 'key-1',
       apiKeyId: 'key-id-1',
       apiId: 'api-1',
       endpointId: 'endpoint-1',
@@ -348,6 +347,8 @@ describe('GET /api/usage/sse', () => {
     expect(received).toContain('event: usage');
     expect(received).toContain('id: evt-1');
     expect(received).toContain('"apiId":"api-1"');
+    expect(received).toContain('"apiKeyId":"key-id-1"');
+    expect(received).not.toContain('key-1');
   });
 
   it('does not deliver one user\'s events to another user\'s stream', async () => {
