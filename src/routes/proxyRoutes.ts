@@ -272,6 +272,26 @@ export function createProxyRouter(deps: ProxyDeps): Router {
       } catch (err: unknown) {
         let outcome: UpstreamOutcome = 'error';
 
+        // If headers have already been flushed to the client, we cannot send a
+        // structured error response.  Destroy the socket so the client sees a
+        // terminated stream instead of hanging on a truncated body.  Log once
+        // with the requestId for observability.
+        if (res.headersSent) {
+          logger.error(
+            {
+              err,
+              requestId,
+              apiId: String(apiEntry.id),
+              endpointId: endpoint.endpointId,
+              upstreamStatus,
+            },
+            'Proxy error after headers sent; destroying response socket',
+          );
+          timer.stop(upstreamStatus, outcome);
+          res.destroy(err instanceof Error ? err : undefined);
+          return;
+        }
+
         if (err instanceof CircuitBreakerOpenError) {
           // Circuit breaker open — don't bill the caller
           upstreamStatus = 502;
