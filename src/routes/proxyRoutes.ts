@@ -5,6 +5,7 @@ import { resolveEndpointPrice } from '../data/apiRegistry.js';
 import {
   startUpstreamTimer,
   recordProxyPrematureAbort,
+  recordGatewayUsageRecordFailure,
   type UpstreamOutcome,
   setGatewayUpstreamBreakerState,
   recordEndpointThroughputSaturation,
@@ -412,7 +413,12 @@ export function createProxyRouter(deps: ProxyDeps): Router {
                   });
                 }
               } catch (err) {
-                console.error('Background usage recording failed:', err);
+                recordGatewayUsageRecordFailure(String(apiEntry.id));
+                logger.error('Background usage recording failed', {
+                  requestId,
+                  apiId: String(apiEntry.id),
+                  error: err,
+                });
               }
             })();
           });
