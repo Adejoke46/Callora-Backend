@@ -55,11 +55,11 @@ export class InvoiceService {
           COUNT(*) AS usage_count,
           SUM(amount_usdc) AS amount
         FROM usage_events
-        WHERE created_at >= $2
-          AND created_at < $3
+        WHERE created_at >= $1
+          AND created_at < $2
         GROUP BY user_id, api_id
         `,
-        [periodId, periodStart, nextPeriodStart]
+        [periodStart, nextPeriodStart]
       );
 
       let invoicesCreated = 0;

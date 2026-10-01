@@ -131,7 +131,7 @@ const DEV_SEED_ENTRIES: ApiRegistryEntry[] = [
 /**
  * Seed entries are only used outside of production. In production the
  * registry must be populated from a trusted source, and the upstream
- * allowlist must be provided explicitly via UPSTREAM_ALLOWED_HOSTS.
+ * allowlist must be provided explicitly via UPSTREAM_HOST_ALLOWLIST.
  */
 const SEED_ENTRIES: ApiRegistryEntry[] =
   process.env.NODE_ENV === 'production' ? [] : DEV_SEED_ENTRIES;

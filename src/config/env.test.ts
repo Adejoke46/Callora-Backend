@@ -306,7 +306,7 @@ describe('env schema — revenue ledger indexer config', () => {
     const result = envSchema.safeParse({
       ...baseEnv,
       REVENUE_LEDGER_INDEXER_INTERVAL_MS: '0',
-      REVENEE_LEDGER_INDEXER_BATCH_SIZE: '-10',
+      REVENUE_LEDGER_INDEXER_BATCH_SIZE: '-10',
     });
     expect(result.success).toBe(false);
   });

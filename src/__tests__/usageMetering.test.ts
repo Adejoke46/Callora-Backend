@@ -8,7 +8,7 @@ import { InMemoryUsageStore } from '../services/usageStore.js';
 import { InMemoryApiRegistry } from '../data/apiRegistry.js';
 import { ApiKey, ApiRegistryEntry, ProxyConfig } from '../types/gateway.js';
 import { errorHandler } from '../middleware/errorHandler.js';
-import { gatewayUsageRecordFailuresTotal } from '../metrics.js';
+import { metricsEndpoint } from '../metrics.js';
 
 // ── Test fixtures ───────────────────────────────────────────────────────────
 
@@ -69,6 +69,7 @@ async function startProxy() {
     apiKeys,
     proxyConfig: currentProxyConfig,
   });
+  app.get('/api/metrics', metricsEndpoint);
   app.use('/v1/call', proxyRouter);
   app.use(errorHandler);
 

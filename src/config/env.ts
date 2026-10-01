@@ -569,7 +569,7 @@ export const envSchema = z
 
     // In production the upstream host allowlist must be explicitly configured.
     // The default empty allowlist rejects all upstream hosts, so operators
-    // must set UPSTREAM_ALLOWED_HOSTS to a non-empty value to proxy traffic.
+    // must set UPSTREAM_HOST_ALLOWLIST to a non-empty value to proxy traffic.
     if (
       values.NODE_ENV === "production" &&
       (!values.UPSTREAM_HOST_ALLOWLIST ||

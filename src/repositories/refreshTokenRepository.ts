@@ -64,7 +64,7 @@ export class DatabaseRefreshTokenRepository implements RefreshTokenRepository {
     const result = await this.readDb.query(
       `SELECT id, user_id, token_hash, expires_at, created_at, last_used_at, is_revoked, family_id
        FROM refresh_tokens
-       WHERE id = $1 AND user_id = $2 AND is_revoked = false`,
+       WHERE id = $1 AND user_id = $2`,
       [tokenId, userId]
     );
 
@@ -87,7 +87,7 @@ export class DatabaseRefreshTokenRepository implements RefreshTokenRepository {
     const result = await this.readDb.query(
       `SELECT id, user_id, token_hash, expires_at, created_at, last_used_at, is_revoked, family_id
        FROM refresh_tokens
-       WHERE token_hash = $1 AND user_id = $2 AND is_revoked = false`,
+       WHERE token_hash = $1 AND user_id = $2`,
       [tokenHash, userId]
     );
 

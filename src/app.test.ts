@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { createApp } from './app.js';
-import { InMemoryUsageEventsRepository } from './repositories/usageEventsRepository.js';
+import { InMemoryUsageEventsRepository, type UsageEventsRepository } from './repositories/usageEventsRepository.js';
 import type { Api } from './db/schema.js';
 import type { ApiRepository, ApiListFilters, ApiCreateInput, ApiUpdateInput } from './repositories/apiRepository.js';
 import type { Developer } from './db/schema.js';

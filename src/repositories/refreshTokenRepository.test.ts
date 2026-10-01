@@ -71,7 +71,7 @@ describe('DatabaseRefreshTokenRepository', () => {
     await expect(repo.createRefreshToken(invalidToken)).rejects.toThrow();
   });
 
-  it('findRefreshTokenById: should retrieve active token and strict-exclude revoked tokens', async () => {
+  it('findRefreshTokenById: should retrieve active token and still return revoked tokens for reuse detection', async () => {
     const activeTokenData = createValidToken(userId1);
     const activeToken = await repo.createRefreshToken(activeTokenData);
 
@@ -81,11 +81,12 @@ describe('DatabaseRefreshTokenRepository', () => {
 
     await repo.revokeRefreshToken(activeToken.id as string, userId1);
 
-    const notFound = await repo.findRefreshTokenById(activeToken.id as string, userId1);
-    expect(notFound).toBeNull();
+    // Revoked rows must still be returned so AuthController can detect reuse.
+    const revoked = await repo.findRefreshTokenById(activeToken.id as string, userId1);
+    expect(revoked?.isRevoked).toBe(true);
   });
 
-  it('findRefreshTokenByHash: should retrieve active token by hash and strict-exclude revoked tokens', async () => {
+  it('findRefreshTokenByHash: should retrieve active token by hash and still return revoked tokens for reuse detection', async () => {
     const activeTokenData = createValidToken(userId1);
     const activeToken = await repo.createRefreshToken(activeTokenData);
 
@@ -95,8 +96,8 @@ describe('DatabaseRefreshTokenRepository', () => {
 
     await repo.revokeRefreshToken(activeToken.id as string, userId1);
 
-    const notFound = await repo.findRefreshTokenByHash(activeTokenData.tokenHash, userId1);
-    expect(notFound).toBeNull();
+    const revoked = await repo.findRefreshTokenByHash(activeTokenData.tokenHash, userId1);
+    expect(revoked?.isRevoked).toBe(true);
   });
 
   it('updateLastUsed: should update the last_used_at timestamp directly', async () => {
