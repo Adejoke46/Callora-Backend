@@ -79,6 +79,7 @@ import {
 import type { RestRateLimitOptions } from "./middleware/restRateLimit.js";
 import { createPerDevConcurrencyMiddleware } from "./middleware/perDevConcurrency.js";
 import { auditEnrichMiddleware } from "./middleware/auditEnrich.js";
+import { asyncHandler } from "./utils/asyncHandler.js";
 import { createRouteBodyLimitMiddleware } from "./middleware/routeBodyLimit.js";
 import { metricsMiddleware, metricsEndpoint } from "./metrics.js";
 import { config } from "./config/index.js";
@@ -451,7 +452,7 @@ export const createApp = (dependencies?: Partial<AppDependencies>) => {
   app.get(
     "/api/developers/apis",
     requireAuth,
-    async (req, res: express.Response<unknown, AuthenticatedLocals>, next) => {
+    asyncHandler(async (req, res: express.Response<unknown, AuthenticatedLocals>, next) => {
       const requestId = getRequestId(req);
       const user = res.locals.authenticatedUser;
       if (!user) {
@@ -521,7 +522,7 @@ export const createApp = (dependencies?: Partial<AppDependencies>) => {
           requestId,
         ),
       );
-    },
+    }),
   );
 
   /**
@@ -557,7 +558,7 @@ export const createApp = (dependencies?: Partial<AppDependencies>) => {
   app.get(
     "/api/developers/analytics",
     requireAuth,
-    async (req, res: express.Response<unknown, AuthenticatedLocals>, next) => {
+    asyncHandler(async (req, res: express.Response<unknown, AuthenticatedLocals>, next) => {
       const requestId = getRequestId(req);
       const user = res.locals.authenticatedUser;
       if (!user) {
@@ -609,7 +610,7 @@ export const createApp = (dependencies?: Partial<AppDependencies>) => {
 
       const analytics = buildDeveloperAnalytics(events, groupBy, includeTop);
       res.json(successEnvelope(analytics, requestId));
-    },
+    }),
   );
 
   // Deposit transaction preparation endpoint
