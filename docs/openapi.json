@@ -7472,7 +7472,13 @@
           "EXPORT_SCHEDULE_NOT_FOUND",
           "MISSING_AUTH_FIELDS",
           "AUTH_NOT_IMPLEMENTED",
-          "COMPONENT_NOT_CONFIGURED"
+          "COMPONENT_NOT_CONFIGURED",
+          "INVALID_ENTRY_ID",
+          "AUDIT_ENTRY_NOT_FOUND",
+          "AUDIT_ACTION_NOT_REPLAYABLE",
+          "AUDIT_DETAILS_INCOMPLETE",
+          "LOG_ENTRY_NOT_FOUND",
+          "BULK_QUOTA_UPDATE_FAILED"
         ],
         "description": "Canonical Callora backend error code."
       },

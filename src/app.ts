@@ -8,6 +8,8 @@ import { createAdminUsageByEndpointRouter } from './routes/admin/usage/by-endpoi
 import { createSpikeRouter } from './routes/admin/usage/spike.js';
 import publicMaintenanceRouter from './routes/maintenance.js';
 import { createApiRouter } from './routes/index.js';
+import { createDocsRouter } from './routes/docs.js';
+import { getEmbeddedAssets } from './lib/embeddedAssets.js';
 import { createApisRouter } from './routes/apis.js';
 import { createWebhooksRouter } from './routes/webhooks.js';
 import { createPluginsRouter } from './routes/marketplace/plugins.js';
@@ -205,6 +207,9 @@ export const createApp = (dependencies?: Partial<AppDependencies>) => {
   const developerRepository =
     dependencies?.developerRepository ?? defaultDeveloperRepository;
 
+  // Public documentation routes (own CSP; mounted ahead of the global Helmet policy)
+  app.use(createDocsRouter());
+
   // Production-safe security headers with environment-based configuration
   const isProduction = process.env.NODE_ENV === "production";
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -332,12 +337,17 @@ export const createApp = (dependencies?: Partial<AppDependencies>) => {
   // OpenAPI contract validation — only validates paths defined in the spec.
   // Security is handled by custom middleware, not the validator.
   // Skip in test environment to avoid interfering with integration tests.
+  const embeddedOpenApi = getEmbeddedAssets()?.openapi;
   if (process.env.NODE_ENV !== "test") {
     app.use(
       OpenApiValidator.middleware({
-        apiSpec: path.resolve(process.cwd(), "docs/openapi.json"),
+        apiSpec: embeddedOpenApi
+          ? JSON.parse(embeddedOpenApi)
+          : path.resolve(process.cwd(), "docs/openapi.json"),
         validateRequests: true,
-        validateResponses: true,
+        // Response validation is disabled in demo mode, where some responses
+        // intentionally omit optional contract fields (see README).
+        validateResponses: process.env.DEMO_MODE !== "true",
         validateSecurity: false,
         ignoreUndocumented: true,
       }),

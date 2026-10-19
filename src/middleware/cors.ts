@@ -169,6 +169,14 @@ export function createCorsAllowlistMiddleware(
     // the structured warning line up byte-for-byte.
     const requestId = getRequestId(req as Request & { headers: Record<string, string | string[] | undefined> });
 
+    if (!origin && process.env.CORS_ALLOW_MISSING_ORIGIN === 'true') {
+      // Non-browser clients (curl, server-to-server) send no Origin header.
+      // CORS is a browser-enforced policy, so these may be let through when
+      // explicitly enabled (used by the public demo deployment).
+      next();
+      return;
+    }
+
     if (!origin) {
       logger.warn('[cors] missing Origin header', {
         method: req.method,

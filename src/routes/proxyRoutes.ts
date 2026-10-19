@@ -227,7 +227,7 @@ export function createProxyRouter(deps: ProxyDeps): Router {
       const timer = startUpstreamTimer(apiEntry.id, req.method);
 
       try {
-        const executeWithRetry = async (attempt = 1): Promise<Response> => {
+        const executeWithRetry = async (attempt = 1): Promise<globalThis.Response> => {
           try {
             return await fetch(safeUpstreamTarget, {
               method: req.method,

@@ -47,7 +47,8 @@ export async function sendMail(payload: MailPayload): Promise<void> {
   if (mailerOptions.transport === 'smtp') {
     let nodemailer: any;
     try {
-      nodemailer = await import('nodemailer');
+      const moduleName = 'nodemailer'; // optional dependency, resolved at runtime
+      nodemailer = await import(moduleName);
     } catch {
       logger.warn('[mailer] nodemailer not installed, falling back to console transport');
       logToConsole(payload);

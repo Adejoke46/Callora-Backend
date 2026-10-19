@@ -50,9 +50,12 @@ import { InMemoryUsageStore } from "../services/usageStore.js";
 import { requireAuth, type AuthenticatedLocals } from "../middleware/requireAuth.js";
 import { apiKeyRepository } from "../repositories/apiKeyRepository.js";
 import { adminAuth } from "../middleware/adminAuth.js";
+import { getEmbeddedAssets } from "../lib/embeddedAssets.js";
 
 const openApiPath = path.join(process.cwd(), "docs/openapi.json");
-const openApiSpec = JSON.parse(readFileSync(openApiPath, "utf8"));
+const openApiSpec = JSON.parse(
+  getEmbeddedAssets()?.openapi ?? readFileSync(openApiPath, "utf8"),
+);
 
 export interface ApiRouterDeps
   extends Partial<UsageRouterDeps>, Partial<ApisRouterDeps> {
