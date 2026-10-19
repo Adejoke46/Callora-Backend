@@ -7,7 +7,10 @@ import { createConfiguredGatewayRateLimitMiddleware } from '../middleware/gatewa
 import type { GatewayDeps, ApiKey } from '../types/gateway.js';
 import { buildHopByHopSet } from '../lib/hopByHop.js';
 import { defaultUsageSseBroadcaster } from './usage/sse.js';
-import { getDefaultBreakerRegistry, CircuitBreakerState } from '../lib/circuitBreaker.js';
+import { getDefaultBreakerRegistry, CircuitBreakerState, CircuitBreakerOpenError } from '../lib/circuitBreaker.js';
+import { correlationMiddleware } from '../middleware/correlation.js';
+import { getTokenRevocationService } from '../services/tokenRevocation.js';
+import { env } from '../config/env.js';
 import { logger } from '../logger.js';
 
 import {
@@ -363,9 +366,9 @@ export function createGatewayRouter(deps: GatewayDeps): Router {
         // We create this early so we can perform a pre-check BEFORE deducting
         // billing credits — callers must not be charged when the circuit is open.
         const endpointBreaker = breakerRegistry.getOrCreate(req.params.apiId, {
-          failureThreshold: env.GATEWAY_BREAKER_FAILURE_THRESHOLD,
-          cooldownMs: env.GATEWAY_BREAKER_COOLDOWN_MS,
-          successThreshold: env.GATEWAY_BREAKER_SUCCESS_THRESHOLD,
+          failureThreshold: env.PROXY_BREAKER_FAILURE_THRESHOLD,
+          cooldownMs: env.PROXY_BREAKER_COOLDOWN_MS,
+          successThreshold: env.PROXY_BREAKER_SUCCESS_THRESHOLD,
         });
 
         // Fast-fail before billing if the circuit breaker is OPEN and still in
@@ -487,7 +490,6 @@ export function createGatewayRouter(deps: GatewayDeps): Router {
           defaultUsageSseBroadcaster.emitForUser(keyRecord.developerId, {
             id: randomUUID(),
             requestId,
-            apiKey: apiKeyHeader,
             apiKeyId: keyRecord.key,
             apiId: keyRecord.apiId,
             endpointId: 'legacy',

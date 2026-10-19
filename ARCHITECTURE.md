@@ -4,12 +4,7 @@
 
 ## Route Map
 
-The test and library entrypoint is `createApp` in `src/app.ts`. The production
-bootstrap in `src/index.ts` creates a separate Express app, with its business
-mounts inside the `isDirectExecution` branch. The same URL can therefore be
-available through one entrypoint and absent from the other. Rows marked
-`src/index.ts only` are production-bootstrap routes and are not part of
-`createApp`.
+Both the test suite and the production bootstrap (`src/index.ts`) build the application with `createApp` in `src/app.ts`, so the routes below are what is served at runtime. Gateway/proxy routers (`src/routes/gatewayRoutes.ts`, `src/routes/proxyRoutes.ts`) are library code that is not mounted by default.
 
 | Method | Full path | Router source file | Auth | Rate limit |
 | --- | --- | --- | --- | --- |
